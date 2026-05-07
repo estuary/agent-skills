@@ -1,0 +1,57 @@
+{
+  "name": "estuary",
+  "metadata": {
+    "description": "Agent skills for building data pipelines with Estuary",
+    "version": "1.0.0"
+  },
+  "owner": {
+    "name": "Estuary",
+    "email": "support@estuary.dev"
+  },
+  "plugins": [
+    {
+      "name": "estuary-captures",
+      "description": "Capture skills for PostgreSQL, MySQL, MongoDB, SQL Server, HTTP webhooks, and 148+ other connectors",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/capture-postgres-create",
+        "./skills/capture-mysql-create",
+        "./skills/capture-mongodb-create",
+        "./skills/capture-sqlserver-create",
+        "./skills/capture-http-ingest-create",
+        "./skills/capture-generic-create"
+      ]
+    },
+    {
+      "name": "estuary-materializations",
+      "description": "Materialization skills for PostgreSQL, Snowflake, BigQuery, Redshift, Databricks, and any destination connector",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/materialize-postgres-create",
+        "./skills/materialize-snowflake-create",
+        "./skills/materialize-bigquery-create",
+        "./skills/materialize-redshift-create",
+        "./skills/materialize-databricks-create",
+        "./skills/materialize-generic-create"
+      ]
+    },
+    {
+      "name": "estuary-operations",
+      "description": "Operational skills for flowctl setup, task health monitoring, log analysis, connector management, and SSH tunnel troubleshooting",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/estuary-flowctl-setup",
+        "./skills/estuary-task-health",
+        "./skills/estuary-catalog-status",
+        "./skills/estuary-task-stats",
+        "./skills/estuary-catalog-history",
+        "./skills/estuary-logs",
+        "./skills/estuary-connector-restart",
+        "./skills/estuary-ssh-tunnels"
+      ]
+    }
+  ]
+}
