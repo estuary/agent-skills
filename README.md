@@ -99,6 +99,7 @@ Common paths by tool:
 | Cursor | `.cursor/skills/` |
 | GitHub Copilot / VS Code | `.github/skills/` |
 | OpenCode | `.opencode/skills/` |
+| Codex | `.codex/skills/` |
 
 ## Usage
 
