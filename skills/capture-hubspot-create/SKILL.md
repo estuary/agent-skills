@@ -39,9 +39,9 @@ This skill provides the **flowctl workflow** and **troubleshooting** that docs d
 Before writing any YAML, ask the user:
 
 1. **HubSpot account access?** — User must have access to the HubSpot account being captured
-2. **Authentication method?** — Two options:
-   - **Private App Credentials** (simplest for flowctl users) — A single `access_token` generated from a HubSpot Private App in the portal. No OAuth callback needed. Recommended when working purely in flowctl/YAML.
-   - **OAuth Credentials** (recommended in the web UI) — `client_id` + `client_secret` + `refresh_token`. Easiest path: complete the OAuth flow in the Estuary web UI (it mints the `refresh_token` for you), then pull the spec to local. Building your own HubSpot OAuth app and exchanging an auth code for a refresh token manually is supported but more involved.
+2. **OAuth credentials?** — The connector authenticates with HubSpot via OAuth using `client_id` + `client_secret` + `refresh_token`. The easiest path is to complete the OAuth flow in the Estuary web UI (it mints the `refresh_token` for you), then pull the spec to local. Building your own HubSpot OAuth app and exchanging an auth code for a refresh token manually is supported but more involved.
+
+   The connector's JSON schema also exposes a `Private App Credentials` discriminator, but in practice HubSpot Private App tokens have not been observed to authenticate successfully against the connector — **use OAuth**.
 3. **Non-default data plane?** — Most users use the default. Ask if they need a non-default data plane.
 4. **Which resources to capture?** — All discovered resources (default) or a subset. The connector auto-discovers: Campaigns, Companies, Contact List Memberships, Contact Lists, Contacts, Custom Objects, Deal Pipelines, Deals, Email Events, Engagements, Feedback Submissions, Form Submissions, Forms, Goals, Line Items, Marketing Emails, Marketing Events, Orders, Owners, Products, Properties, Tickets, Workflows.
 5. **Capture property history?** — Off by default. Enable to include historical changes to HubSpot object properties in captured documents.
@@ -78,21 +78,9 @@ Use the returned `image_tag` — never hardcode a version.
 
 ## Step 3: Help User Complete Prerequisites
 
-### Option A: Private App access token (simplest for flowctl)
-
-1. In HubSpot, go to **Settings → Integrations → Private Apps**
-2. Click **Create a private app**, name it (e.g., "Estuary Capture")
-3. On the **Scopes** tab, grant the read scopes the connector needs. At minimum:
-   - `crm.lists.read`, `crm.objects.companies.read`, `crm.objects.contacts.read`, `crm.objects.deals.read`, `crm.objects.owners.read`
-   - `crm.schemas.companies.read`, `crm.schemas.contacts.read`, `crm.schemas.deals.read`
-   - `e-commerce`, `forms`, `tickets`
-   - Optional: `automation`, `content`, `crm.objects.custom.read`, `crm.objects.feedback_submissions.read`, `crm.objects.goals.read`, `crm.objects.marketing_events.read`, `crm.objects.orders.read`, `crm.schemas.custom.read`, `marketing.campaigns.read`
-4. Create the app and copy the generated **access token**
-5. Use it in the config under `credentials.access_token`
-
-### Option B: OAuth via Estuary web UI (then pull to flowctl)
-
 The OAuth Authorization Code flow needs an interactive browser redirect, so it **cannot** be completed inside a headless agent / CLI session. The user must complete it elsewhere first, then bring the resulting credentials back to flowctl.
+
+### Recommended: OAuth via Estuary web UI (then pull to flowctl)
 
 1. In the Estuary web UI, create a new capture and select the **HubSpot ( Real-Time )** connector
 2. Click **Authenticate your HubSpot account** to launch the OAuth flow
@@ -104,32 +92,21 @@ The OAuth Authorization Code flow needs an interactive browser redirect, so it *
 flowctl catalog pull-specs --name <TENANT>/<PATH>/source-hubspot-native
 ```
 
-If the user wants to manage their own OAuth app instead, refer them to the docs page — they will need to register a HubSpot OAuth app, configure scopes, complete the auth code → refresh token exchange themselves (e.g., via the provider's web flow), and provide `client_id`, `client_secret`, and `refresh_token` as hardcoded values in the spec.
+### Alternative: bring your own HubSpot OAuth app
 
-`flowctl raw oauth` exists to drive this flow locally but is not reliable for agent-driven CLI workflows — prefer Option A (Private App) when running purely from flowctl.
+If the user needs to manage their own OAuth app (for an air-gapped tenant, scope control, etc.):
+
+1. Register a HubSpot OAuth app via `hs project create` (HubSpot CLI, v7.6.0+) or the HubSpot Developer portal
+2. Configure `requiredScopes` / `optionalScopes` and `redirectUrls` on the app
+3. Install / authorize the app against the target HubSpot account
+4. Exchange the resulting auth code for a `refresh_token` against `https://api.hubapi.com/oauth/v1/token`
+5. Plug `client_id`, `client_secret`, and `refresh_token` into the spec
+
+A small local helper (HTTP server on the registered redirect URI + `curl` for the token exchange) is the most reliable way to drive the code-to-refresh-token step from a CLI workflow. `flowctl raw oauth` exists for this purpose but currently has a parsing bug (see Troubleshooting).
 
 ## Step 4: Create the Capture Spec File
 
-Build `flow.yaml` using the config reference from the docs. Pick one of the two credential blocks below.
-
-### Private App access token
-
-```yaml
-captures:
-  <TENANT>/<PATH>/source-hubspot-native:
-    endpoint:
-      connector:
-        image: ghcr.io/estuary/source-hubspot-native:<VERSION>
-        config:
-          capturePropertyHistory: false
-          credentials:
-            credentials_title: "Private App Credentials"
-            access_token: "<HUBSPOT_PRIVATE_APP_ACCESS_TOKEN>"
-          # useLegacyNamingForCustomObjects: false  # hidden — do not change without Estuary Support
-    bindings: []
-```
-
-### OAuth refresh token
+Build `flow.yaml` using the config reference from the docs:
 
 ```yaml
 captures:
@@ -144,18 +121,18 @@ captures:
             client_id: "<CLIENT_ID>"
             client_secret: "<CLIENT_SECRET>"
             refresh_token: "<REFRESH_TOKEN>"
+          # useLegacyNamingForCustomObjects: false  # hidden — do not change without Estuary Support
     bindings: []
 ```
 
 **Important**:
-- `credentials_title` must be the literal string `"OAuth Credentials"` **or** `"Private App Credentials"` — it's the discriminator the connector uses to pick the auth schema.
-- For OAuth, all three of `client_id`, `client_secret`, and `refresh_token` are required.
-- For Private App, only `access_token` is required.
+- `credentials_title` must be the literal string `"OAuth Credentials"` — it's the discriminator the connector uses to pick the auth schema.
+- All three of `client_id`, `client_secret`, and `refresh_token` are required.
 - `useLegacyNamingForCustomObjects` is hidden in the dashboard and only editable via flowctl. Leave at default unless instructed by Estuary Support.
 
 ### Protect secrets before committing
 
-The `access_token`, `client_secret`, and `refresh_token` are all secrets — don't commit them in plain text. Encrypt them with Estuary's sops-based mechanism:
+`client_secret` and `refresh_token` are secrets — don't commit them in plain text. Encrypt them with Estuary's sops-based mechanism:
 
 ```bash
 # Encrypt only the secret fields in the spec (sops + KMS)
@@ -234,17 +211,14 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 **Cause**: The `client_id` (or `client_secret`) under `credentials` is wrong, a placeholder, or for a HubSpot OAuth app that has been deleted.
 
 **Fix**:
-1. Verify `client_id` and `client_secret` match a current HubSpot OAuth app — or switch to the simpler **Private App Credentials** path (see Step 4).
+1. Verify `client_id` and `client_secret` match a current HubSpot OAuth app.
 2. If the spec came from the Estuary web UI, re-publish from there to refresh credentials.
 
-### `INVALID_AUTHENTICATION` / "Authentication credentials not found" (HTTP 401 from `https://api.hubapi.com/...`)
+### `EXPIRED_AUTHENTICATION` with `expire time: 1970-01-01T00:00:00Z`
 
-**Cause**: Using **Private App Credentials** with an invalid, expired, or revoked `access_token`. The connector sends the token in the Authorization header and HubSpot rejects it before any data is read.
+**Cause**: A non-OAuth bearer token was supplied (e.g. a HubSpot Private App access token, or a CMS API key) under what the connector treats as an OAuth grant. HubSpot recognizes the token shape but cannot decode an expiry from it, so it falls back to the Unix epoch — making the error message say "expired 20602 day(s) ago." Despite the JSON schema exposing a `Private App Credentials` discriminator, in practice only `OAuth Credentials` reliably authenticates.
 
-**Fix**:
-1. Open the Private App in HubSpot (Settings → Integrations → Private Apps), confirm it's still active, and copy the access token again
-2. If the token was rotated, paste the new value into `credentials.access_token` and republish
-3. Verify the Private App has the required read scopes (see Step 3, Option A)
+**Fix**: Use `credentials_title: "OAuth Credentials"` with a real `client_id` / `client_secret` / `refresh_token` (see Step 3).
 
 ### Scopes warning during OAuth — write permissions in the consent screen
 
@@ -313,9 +287,8 @@ flowctl catalog publish --source flow.yaml --auto-approve
 **Cause**: A current parsing bug in `flowctl raw oauth` — the `--endpoint-config` argument fails JSON-Schema validation for any input (`{}`, JSON, YAML all fail with the same error). The command can't currently drive a HubSpot OAuth flow locally.
 
 **Fix**:
-- For CLI workflows, use Option A (Private App access token) — no OAuth round-trip needed.
-- If you must use OAuth, complete the flow once in the Estuary web UI (it'll mint the `refresh_token` for you), then pull the published spec down to local with `flowctl catalog pull-specs`.
-- A small local helper (HTTP server on the registered redirect URI, code → token exchange via `curl`) is a viable last resort. Use `curl` rather than Python's `urllib.request` — the python.org macOS Python distribution doesn't link the system trust store and `urlopen` fails the TLS handshake.
+- Complete the OAuth flow once in the Estuary web UI (it'll mint the `refresh_token` for you), then pull the published spec down to local with `flowctl catalog pull-specs`.
+- If you need to run the flow locally (e.g. for an OAuth app you own), write a small helper that listens on the registered redirect URI and exchanges the code for tokens via `curl`. Use `curl` rather than Python's `urllib.request` — the python.org macOS Python distribution doesn't link the system trust store and `urlopen` fails the TLS handshake.
 
 ### Capture stuck in PENDING
 
