@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "estuary-captures",
-      "description": "Capture skills for PostgreSQL, MySQL, MongoDB, SQL Server, HTTP webhooks, and 148+ other connectors",
+      "description": "Capture skills for PostgreSQL, MySQL, MongoDB, SQL Server, HubSpot, HTTP webhooks, and 148+ other connectors",
       "source": "./",
       "strict": false,
       "skills": [
@@ -19,13 +19,14 @@
         "./skills/capture-mysql-create",
         "./skills/capture-mongodb-create",
         "./skills/capture-sqlserver-create",
+        "./skills/capture-hubspot-create",
         "./skills/capture-http-ingest-create",
         "./skills/capture-generic-create"
       ]
     },
     {
       "name": "estuary-materializations",
-      "description": "Materialization skills for PostgreSQL, Snowflake, BigQuery, Redshift, Databricks, and any destination connector",
+      "description": "Materialization skills for PostgreSQL, Snowflake, BigQuery, Redshift, Databricks, ClickHouse, and any destination connector",
       "source": "./",
       "strict": false,
       "skills": [
@@ -34,6 +35,7 @@
         "./skills/materialize-bigquery-create",
         "./skills/materialize-redshift-create",
         "./skills/materialize-databricks-create",
+        "./skills/materialize-clickhouse-create",
         "./skills/materialize-generic-create"
       ]
     },

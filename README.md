@@ -18,6 +18,7 @@ Capture data from databases, APIs, and webhooks into Estuary collections.
 | `capture-mysql-create` | MySQL CDC via binlog replication (RDS, Aurora, Cloud SQL, Azure) |
 | `capture-mongodb-create` | MongoDB CDC (Atlas, DocumentDB, self-hosted) |
 | `capture-sqlserver-create` | SQL Server CDC (RDS, Azure SQL, Cloud SQL) |
+| `capture-hubspot-create` | HubSpot real-time CRM capture (contacts, companies, deals, tickets) |
 | `capture-http-ingest-create` | HTTP webhook capture (GitHub, Shopify, Stripe, or any JSON source) |
 | `capture-generic-create` | Any of 148+ source connectors via dynamic schema discovery |
 
@@ -32,6 +33,7 @@ Stream Estuary collections into downstream databases and warehouses.
 | `materialize-bigquery-create` | BigQuery destination (GCS staging) |
 | `materialize-redshift-create` | Amazon Redshift destination (S3 staging) |
 | `materialize-databricks-create` | Databricks destination (Unity Catalog) |
+| `materialize-clickhouse-create` | ClickHouse destination (native protocol) |
 | `materialize-generic-create` | Any destination connector via dynamic schema discovery |
 
 ### Operations
