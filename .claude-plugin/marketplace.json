@@ -38,6 +38,22 @@
       ]
     },
     {
+      "name": "estuary-derivations",
+      "description": "Derivation skills for transforming Estuary collections in SQL, TypeScript, or Python: filters, aggregations, joins, array flattening, stateful logic, and time windowing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/derivation-basics",
+        "./skills/derivation-filter-transform",
+        "./skills/derivation-aggregate-metrics",
+        "./skills/derivation-join-collections",
+        "./skills/derivation-flatten-array",
+        "./skills/derivation-stateful-logic",
+        "./skills/derivation-windowing",
+        "./skills/derivation-python"
+      ]
+    },
+    {
       "name": "estuary-operations",
       "description": "Operational skills for flowctl setup, task health monitoring, log analysis, connector management, and SSH tunnel troubleshooting",
       "source": "./",

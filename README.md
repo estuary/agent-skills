@@ -34,6 +34,21 @@ Stream Estuary collections into downstream databases and warehouses.
 | `materialize-databricks-create` | Databricks destination (Unity Catalog) |
 | `materialize-generic-create` | Any destination connector via dynamic schema discovery |
 
+### Derivations (transformations)
+
+Transform, aggregate, and reshape Estuary collections with streaming SQL, TypeScript, or Python.
+
+| Skill | Description |
+|-------|-------------|
+| `derivation-basics` | Foundation: what derivations are, language choice, project layout, and workflow — read first |
+| `derivation-filter-transform` | Stateless filtering, field selection, and per-document field transformation |
+| `derivation-aggregate-metrics` | Daily totals, running counts, min/max, and lifetime metrics via reduction annotations |
+| `derivation-join-collections` | Join two or more collections on a shared key into an enriched collection |
+| `derivation-flatten-array` | Flatten a nested array into one output document per element |
+| `derivation-stateful-logic` | Custom SQLite state for balances, inventory, approval workflows, and deduplication |
+| `derivation-windowing` | Sliding time-window state (e.g. last-24h events) via `readDelay` expiration |
+| `derivation-python` | Write derivations in Python (async transforms, Pydantic types, `uv` deps) for ML/embeddings/async APIs |
+
 ### Operations
 
 Manage and troubleshoot running pipelines.
@@ -77,6 +92,7 @@ Then install by group:
 ```bash
 /plugin install estuary-captures@estuary
 /plugin install estuary-materializations@estuary
+/plugin install estuary-derivations@estuary
 /plugin install estuary-operations@estuary
 ```
 
