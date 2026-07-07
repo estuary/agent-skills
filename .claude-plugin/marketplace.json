@@ -52,6 +52,20 @@
         "./skills/estuary-connector-restart",
         "./skills/estuary-ssh-tunnels"
       ]
+    },
+    {
+      "name": "estuary-schema",
+      "description": "Schema modification skills for Estuary collections and materializations: projections, field selection, custom column types, redaction, null defaults, and defining fields",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/schema-projections",
+        "./skills/schema-field-selection",
+        "./skills/schema-custom-types-ddl",
+        "./skills/schema-field-redaction",
+        "./skills/schema-null-defaults",
+        "./skills/schema-define-fields"
+      ]
     }
   ]
 }
