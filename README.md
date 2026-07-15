@@ -49,6 +49,19 @@ Manage and troubleshoot running pipelines.
 | `estuary-connector-restart` | Pause and restart connectors via shard management |
 | `estuary-ssh-tunnels` | Diagnose and fix SSH tunnel connection issues |
 
+### Schema
+
+Shape collection and materialization schemas: rename and remap fields, control what materializes, tune column types, and protect sensitive data.
+
+| Skill | Description |
+|-------|-------------|
+| `schema-projections` | Rename fields or map nested JSON paths to flat column names |
+| `schema-field-selection` | Include or exclude fields in materializations using depth modes and overrides |
+| `schema-custom-types-ddl` | Override default column types via `castToString` or custom DDL |
+| `schema-field-redaction` | Block or hash sensitive fields (PII, credentials) |
+| `schema-null-defaults` | Set default values for missing fields and handle nullable primary keys |
+| `schema-define-fields` | Add or define fields in a collection's readSchema (pruned, refined, or required) |
+
 ## Prerequisites
 
 - An [Estuary](https://dashboard.estuary.dev/register) account
@@ -78,6 +91,7 @@ Then install by group:
 /plugin install estuary-captures@estuary
 /plugin install estuary-materializations@estuary
 /plugin install estuary-operations@estuary
+/plugin install estuary-schema@estuary
 ```
 
 Or run `/plugin` to browse from the Discover tab. Installed skills auto-update when the marketplace refreshes.
