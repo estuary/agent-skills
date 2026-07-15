@@ -52,7 +52,7 @@ Before writing any YAML, ask the user:
 
 **CRITICAL: Query with the FINAL directive.** In standard (non-delta) mode, the connector uses `ReplacingMergeTree` with `flow_published_at` as the version column. Duplicate keys and tombstones are deduplicated in background merges — queries must use `SELECT ... FROM my_table FINAL` to see correctly deduplicated results.
 
-**CRITICAL: ClickHouse `allow_nullable_key` must be enabled.** The connector creates tables with `ORDER BY (`_meta/row_id`)` where `_meta/row_id` is `Nullable(Int64)`. ClickHouse refuses nullable sort-key columns by default and the first CREATE TABLE fails with `Code 44: Sorting key contains nullable columns`. See Step 3 for the fix — ClickHouse Cloud has this set already; self-hosted servers need a config snippet.
+**CRITICAL: ClickHouse `allow_nullable_key` must be enabled.** The connector creates tables with `ORDER BY (`\_meta/row_id`)` where `_meta/row_id` is `Nullable(Int64)`. ClickHouse refuses nullable sort-key columns by default and the first CREATE TABLE fails with `Code 44: Sorting key contains nullable columns`. See Step 3 for the fix — ClickHouse Cloud has this set already; self-hosted servers need a config snippet.
 
 ### Load pattern note (relevant if you build downstream materialized views)
 
@@ -145,6 +145,7 @@ materializations:
 ```
 
 **Important**:
+
 - `address` must include the port — use `9440` for TLS (default) or `9000` for plaintext.
 - `auth_type` must be `user_password`.
 - Setting `sslmode: "disable"` requires using port 9000.
@@ -166,6 +167,7 @@ flowctl logs --task <TENANT>/<PATH>/materialize-clickhouse --since 5m | jq -c '{
 ```
 
 **Status progression:**
+
 1. `PENDING` — Normal for ~30 seconds during shard assignment
 2. `BACKFILLING` — Initial data sync from collections
 3. `OK` — Running normally with real-time updates
@@ -185,6 +187,7 @@ Without `FINAL`, you may see duplicate rows or tombstoned rows that haven't been
 **Cause**: ClickHouse not reachable on the Native protocol port
 
 **Fix**:
+
 1. Verify port `9440` (TLS) or `9000` (no TLS) is open — **not** `8123` (HTTP interface, unsupported)
 2. For ClickHouse Cloud, verify the IP allowlist includes Estuary's IPs (see docs)
 3. For self-hosted, check the server's `listen_host` and `tcp_port_secure` / `tcp_port` settings
@@ -194,6 +197,7 @@ Without `FINAL`, you may see duplicate rows or tombstoned rows that haven't been
 **Cause**: Incorrect credentials or auth type mismatch
 
 **Fix**:
+
 1. Verify the username and password
 2. Ensure `auth_type` is `user_password` (the only supported value)
 3. Check the user exists: `SELECT name FROM system.users WHERE name = '<user>';`
@@ -203,6 +207,7 @@ Without `FINAL`, you may see duplicate rows or tombstoned rows that haven't been
 **Cause**: System table grants were skipped — `GRANT ALL ON <db>.*` does **not** cover system tables
 
 **Fix**: Explicitly grant SELECT on the system tables:
+
 ```sql
 GRANT SELECT ON system.columns TO <user>;
 GRANT SELECT ON system.parts TO <user>;
@@ -214,6 +219,7 @@ GRANT SELECT ON system.tables TO <user>;
 **Cause**: SSL mode mismatch with the server's TLS configuration
 
 **Fix**:
+
 1. ClickHouse Cloud requires TLS — use `sslmode: "verify-full"` (default) with port 9440
 2. For self-hosted without TLS, use `sslmode: "disable"` with port 9000
 3. For self-signed certs, use `sslmode: "require"` to skip CA verification
@@ -224,6 +230,7 @@ GRANT SELECT ON system.tables TO <user>;
 **Cause**: Query is missing the `FINAL` directive
 
 **Fix**: ClickHouse merges duplicates in the background — queries must use `FINAL` to deduplicate at query time:
+
 ```sql
 SELECT * FROM my_table FINAL;
 ```
@@ -270,6 +277,7 @@ Inspect status via `system.view_refreshes`. For sub-second freshness, use a plai
 **Cause**: Table exists with an incompatible engine or schema
 
 **Fix**:
+
 1. Drop and recreate the table — let the connector create it with `ReplacingMergeTree` (or `MergeTree` for delta updates)
 2. Use a different table name
 3. Ensure the collection schema is compatible with the existing table
@@ -290,7 +298,6 @@ flowctl logs --task <TENANT>/<PATH>/materialize-clickhouse --since 5m | jq 'sele
 
 ## Related Skills
 
-- `connector-disable-enable` — Pause/restart existing materializations
-- `connector-delete-recreate` — Nuclear option for stuck materializations
+- `estuary-connector-restart` — Pause/restart existing materializations
 - `estuary-logs` — Deep log analysis
 - `estuary-catalog-status` — Status checking

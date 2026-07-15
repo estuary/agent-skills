@@ -42,6 +42,7 @@ Before writing any YAML, ask the user:
 2. **OAuth credentials?** — The connector authenticates with HubSpot via OAuth using `client_id` + `client_secret` + `refresh_token`. The easiest path is to complete the OAuth flow in the Estuary web UI (it mints the `refresh_token` for you), then pull the spec to local. Building your own HubSpot OAuth app and exchanging an auth code for a refresh token manually is supported but more involved.
 
    The connector's JSON schema also exposes a `Private App Credentials` discriminator, but in practice HubSpot Private App tokens have not been observed to authenticate successfully against the connector — **use OAuth**.
+
 3. **Non-default data plane?** — Most users use the default. Ask if they need a non-default data plane.
 4. **Which resources to capture?** — All discovered resources (default) or a subset. The connector auto-discovers: Campaigns, Companies, Contact List Memberships, Contact Lists, Contacts, Custom Objects, Deal Pipelines, Deals, Email Events, Engagements, Feedback Submissions, Form Submissions, Forms, Goals, Line Items, Marketing Emails, Marketing Events, Orders, Owners, Products, Properties, Tickets, Workflows.
 5. **Capture property history?** — Off by default. Enable to include historical changes to HubSpot object properties in captured documents.
@@ -126,6 +127,7 @@ captures:
 ```
 
 **Important**:
+
 - `credentials_title` must be the literal string `"OAuth Credentials"` — it's the discriminator the connector uses to pick the auth schema.
 - All three of `client_id`, `client_secret`, and `refresh_token` are required.
 - `useLegacyNamingForCustomObjects` is hidden in the dashboard and only editable via flowctl. Leave at default unless instructed by Estuary Support.
@@ -169,11 +171,11 @@ Example binding with explicit refresh schedule:
 bindings:
   - resource:
       name: companies
-      schedule: "55 23 * * *"   # daily at 23:55 UTC
+      schedule: "55 23 * * *" # daily at 23:55 UTC
     target: <TENANT>/<PATH>/companies
   - resource:
       name: contacts
-      schedule: ""              # disable calculated property refresh (connector default)
+      schedule: "" # disable calculated property refresh (connector default)
     target: <TENANT>/<PATH>/contacts
 ```
 
@@ -191,6 +193,7 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 ```
 
 **Status progression:**
+
 1. `PENDING` — Normal for ~30 seconds during shard assignment
 2. `BACKFILLING` — Initial backfill of each discovered resource
 3. `OK` — Running normally with real-time updates and scheduled calculated-property refreshes
@@ -202,6 +205,7 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 **Cause**: Refresh token was revoked, expired, or copied incorrectly. HubSpot refresh tokens can be revoked if the connected app is uninstalled or the user's HubSpot session is invalidated.
 
 **Fix**:
+
 1. Re-run the OAuth flow in the Estuary web UI to mint a fresh `refresh_token`
 2. Update the capture spec with the new token and republish
 3. Verify the HubSpot user account still has access to the portal
@@ -211,6 +215,7 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 **Cause**: The `client_id` (or `client_secret`) under `credentials` is wrong, a placeholder, or for a HubSpot OAuth app that has been deleted.
 
 **Fix**:
+
 1. Verify `client_id` and `client_secret` match a current HubSpot OAuth app.
 2. If the spec came from the Estuary web UI, re-publish from there to refresh credentials.
 
@@ -237,6 +242,7 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 **Cause**: HubSpot calculated properties don't update `updatedAt`, so the incremental path misses them. They only refresh on the per-binding cron schedule.
 
 **Fix**:
+
 1. Check the binding's `schedule` — empty string disables refresh entirely
 2. Default `55 23 * * *` fires once a day at 23:55 UTC. Tighten the cron if you need fresher values (mindful of HubSpot rate limits)
 3. Refreshes only fire **after the initial backfill completes** — wait for backfill to finish
@@ -252,6 +258,7 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 **Cause**: HubSpot enforces API rate limits per portal. Tight calculated-property refresh schedules or very large portals can hit them.
 
 **Fix**:
+
 1. Loosen the per-binding `schedule` (don't refresh every minute on a large portal)
 2. Reduce the number of bindings if practical
 3. Estuary automatically retries with backoff — transient 429s usually self-heal
@@ -261,13 +268,14 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 **Cause**: The OAuth token's HubSpot user doesn't have access to the missing resources, or the HubSpot account doesn't have the feature enabled (e.g., custom objects require certain HubSpot tiers).
 
 **Fix**:
+
 1. Verify the HubSpot user has access to the missing resources (check their HubSpot permissions)
 2. For custom objects, verify they exist in the HubSpot portal and the user can see them
 3. Re-run `flowctl discover --source flow.yaml`
 
 ### Newly-created HubSpot records don't appear for ~1 hour
 
-**Cause**: The connector runs *two* incremental subtasks per resource — a `realtime` cursor (minutes-fresh) and a `delayed` cursor lagging by ~1 hour to pick up rows HubSpot's API may emit late. For some resources or bulk-write scenarios, fresh rows can sit on the delayed cursor side until the lag elapses.
+**Cause**: The connector runs _two_ incremental subtasks per resource — a `realtime` cursor (minutes-fresh) and a `delayed` cursor lagging by ~1 hour to pick up rows HubSpot's API may emit late. For some resources or bulk-write scenarios, fresh rows can sit on the delayed cursor side until the lag elapses.
 
 **Fix for testing or interactive demos**: Bump the `backfill` counter on the affected bindings and republish — Estuary re-reads via the realtime path and downstream materializations see the new state in seconds.
 
@@ -275,7 +283,7 @@ flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted |
 bindings:
   - resource: { name: contacts }
     target: <TENANT>/<PATH>/contacts
-    backfill: 1   # increment each time you want a re-pull
+    backfill: 1 # increment each time you want a re-pull
 ```
 
 ```bash
@@ -287,6 +295,7 @@ flowctl catalog publish --source flow.yaml --auto-approve
 **Cause**: A current parsing bug in `flowctl raw oauth` — the `--endpoint-config` argument fails JSON-Schema validation for any input (`{}`, JSON, YAML all fail with the same error). The command can't currently drive a HubSpot OAuth flow locally.
 
 **Fix**:
+
 - Complete the OAuth flow once in the Estuary web UI (it'll mint the `refresh_token` for you), then pull the published spec down to local with `flowctl catalog pull-specs`.
 - If you need to run the flow locally (e.g. for an OAuth app you own), write a small helper that listens on the registered redirect URI and exchanges the code for tokens via `curl`. Use `curl` rather than Python's `urllib.request` — the python.org macOS Python distribution doesn't link the system trust store and `urlopen` fails the TLS handshake.
 
@@ -306,7 +315,6 @@ flowctl logs --task <TENANT>/<PATH>/source-hubspot-native --since 5m | jq 'selec
 
 ## Related Skills
 
-- `connector-disable-enable` — Pause/restart existing captures
-- `connector-delete-recreate` — Nuclear option for stuck captures
+- `estuary-connector-restart` — Pause/restart existing captures
 - `estuary-logs` — Deep log analysis
 - `estuary-catalog-status` — Status checking
