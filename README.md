@@ -19,6 +19,7 @@ Capture data from databases, APIs, and webhooks into Estuary collections.
 | `capture-mongodb-create` | MongoDB CDC (Atlas, DocumentDB, self-hosted) |
 | `capture-sqlserver-create` | SQL Server CDC (RDS, Azure SQL, Cloud SQL) |
 | `capture-alpaca-create` | Alpaca stock trade data (historical backfill + real-time websocket stream) |
+| `capture-hubspot-create` | HubSpot real-time CRM capture (contacts, companies, deals, tickets) |
 | `capture-http-ingest-create` | HTTP webhook capture (GitHub, Shopify, Stripe, or any JSON source) |
 | `capture-generic-create` | Any of 148+ source connectors via dynamic schema discovery |
 
@@ -33,7 +34,23 @@ Stream Estuary collections into downstream databases and warehouses.
 | `materialize-bigquery-create` | BigQuery destination (GCS staging) |
 | `materialize-redshift-create` | Amazon Redshift destination (S3 staging) |
 | `materialize-databricks-create` | Databricks destination (Unity Catalog) |
+| `materialize-clickhouse-create` | ClickHouse destination (native protocol) |
 | `materialize-generic-create` | Any destination connector via dynamic schema discovery |
+
+### Derivations (transformations)
+
+Transform, aggregate, and reshape Estuary collections with streaming SQL, TypeScript, or Python.
+
+| Skill | Description |
+|-------|-------------|
+| `derivation-basics` | Foundation: what derivations are, language choice, project layout, and workflow — read first |
+| `derivation-filter-transform` | Stateless filtering, field selection, and per-document field transformation |
+| `derivation-aggregate-metrics` | Daily totals, running counts, min/max, and lifetime metrics via reduction annotations |
+| `derivation-join-collections` | Join two or more collections on a shared key into an enriched collection |
+| `derivation-flatten-array` | Flatten a nested array into one output document per element |
+| `derivation-stateful-logic` | Custom SQLite state for balances, inventory, approval workflows, and deduplication |
+| `derivation-windowing` | Sliding time-window state (e.g. last-24h events) via `readDelay` expiration |
+| `derivation-python` | Write derivations in Python (async transforms, Pydantic types, `uv` deps) for ML/embeddings/async APIs |
 
 ### Operations
 
@@ -49,6 +66,19 @@ Manage and troubleshoot running pipelines.
 | `estuary-logs` | Search and analyze task logs with jq filtering |
 | `estuary-connector-restart` | Pause and restart connectors via shard management |
 | `estuary-ssh-tunnels` | Diagnose and fix SSH tunnel connection issues |
+
+### Schema
+
+Shape collection and materialization schemas: rename and remap fields, control what materializes, tune column types, and protect sensitive data.
+
+| Skill | Description |
+|-------|-------------|
+| `schema-projections` | Rename fields or map nested JSON paths to flat column names |
+| `schema-field-selection` | Include or exclude fields in materializations using depth modes and overrides |
+| `schema-custom-types-ddl` | Override default column types via `castToString` or custom DDL |
+| `schema-field-redaction` | Block or hash sensitive fields (PII, credentials) |
+| `schema-null-defaults` | Set default values for missing fields and handle nullable primary keys |
+| `schema-define-fields` | Add or define fields in a collection's readSchema (pruned, refined, or required) |
 
 ## Prerequisites
 
@@ -78,7 +108,9 @@ Then install by group:
 ```bash
 /plugin install estuary-captures@estuary
 /plugin install estuary-materializations@estuary
+/plugin install estuary-derivations@estuary
 /plugin install estuary-operations@estuary
+/plugin install estuary-schema@estuary
 ```
 
 Or run `/plugin` to browse from the Discover tab. Installed skills auto-update when the marketplace refreshes.

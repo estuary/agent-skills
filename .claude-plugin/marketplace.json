@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "estuary-captures",
-      "description": "Capture skills for PostgreSQL, MySQL, MongoDB, SQL Server, Alpaca, HTTP webhooks, and 148+ other connectors",
+      "description": "Capture skills for PostgreSQL, MySQL, MongoDB, SQL Server, Alpaca, HubSpot, HTTP webhooks, and 148+ other connectors",
       "source": "./",
       "strict": false,
       "skills": [
@@ -20,13 +20,14 @@
         "./skills/capture-mongodb-create",
         "./skills/capture-sqlserver-create",
         "./skills/capture-alpaca-create",
+        "./skills/capture-hubspot-create",
         "./skills/capture-http-ingest-create",
         "./skills/capture-generic-create"
       ]
     },
     {
       "name": "estuary-materializations",
-      "description": "Materialization skills for PostgreSQL, Snowflake, BigQuery, Redshift, Databricks, and any destination connector",
+      "description": "Materialization skills for PostgreSQL, Snowflake, BigQuery, Redshift, Databricks, ClickHouse, and any destination connector",
       "source": "./",
       "strict": false,
       "skills": [
@@ -35,7 +36,24 @@
         "./skills/materialize-bigquery-create",
         "./skills/materialize-redshift-create",
         "./skills/materialize-databricks-create",
+        "./skills/materialize-clickhouse-create",
         "./skills/materialize-generic-create"
+      ]
+    },
+    {
+      "name": "estuary-derivations",
+      "description": "Derivation skills for transforming Estuary collections in SQL, TypeScript, or Python: filters, aggregations, joins, array flattening, stateful logic, and time windowing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/derivation-basics",
+        "./skills/derivation-filter-transform",
+        "./skills/derivation-aggregate-metrics",
+        "./skills/derivation-join-collections",
+        "./skills/derivation-flatten-array",
+        "./skills/derivation-stateful-logic",
+        "./skills/derivation-windowing",
+        "./skills/derivation-python"
       ]
     },
     {
@@ -52,6 +70,20 @@
         "./skills/estuary-logs",
         "./skills/estuary-connector-restart",
         "./skills/estuary-ssh-tunnels"
+      ]
+    },
+    {
+      "name": "estuary-schema",
+      "description": "Schema modification skills for Estuary collections and materializations: projections, field selection, custom column types, redaction, null defaults, and defining fields",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/schema-projections",
+        "./skills/schema-field-selection",
+        "./skills/schema-custom-types-ddl",
+        "./skills/schema-field-redaction",
+        "./skills/schema-null-defaults",
+        "./skills/schema-define-fields"
       ]
     }
   ]
