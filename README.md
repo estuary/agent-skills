@@ -18,6 +18,7 @@ Capture data from databases, APIs, and webhooks into Estuary collections.
 | `capture-mysql-create` | MySQL CDC via binlog replication (RDS, Aurora, Cloud SQL, Azure) |
 | `capture-mongodb-create` | MongoDB CDC (Atlas, DocumentDB, self-hosted) |
 | `capture-sqlserver-create` | SQL Server CDC (RDS, Azure SQL, Cloud SQL) |
+| `capture-alpaca-create` | Alpaca stock trade data (historical backfill + real-time websocket stream) |
 | `capture-hubspot-create` | HubSpot real-time CRM capture (contacts, companies, deals, tickets) |
 | `capture-http-ingest-create` | HTTP webhook capture (GitHub, Shopify, Stripe, or any JSON source) |
 | `capture-generic-create` | Any of 148+ source connectors via dynamic schema discovery |

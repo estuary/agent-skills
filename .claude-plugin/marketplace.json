@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "estuary-captures",
-      "description": "Capture skills for PostgreSQL, MySQL, MongoDB, SQL Server, HubSpot, HTTP webhooks, and 148+ other connectors",
+      "description": "Capture skills for PostgreSQL, MySQL, MongoDB, SQL Server, Alpaca, HubSpot, HTTP webhooks, and 148+ other connectors",
       "source": "./",
       "strict": false,
       "skills": [
@@ -19,6 +19,7 @@
         "./skills/capture-mysql-create",
         "./skills/capture-mongodb-create",
         "./skills/capture-sqlserver-create",
+        "./skills/capture-alpaca-create",
         "./skills/capture-hubspot-create",
         "./skills/capture-http-ingest-create",
         "./skills/capture-generic-create"
