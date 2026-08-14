@@ -35,6 +35,7 @@ Stream Estuary collections into downstream databases and warehouses.
 | `materialize-redshift-create` | Amazon Redshift destination (S3 staging) |
 | `materialize-databricks-create` | Databricks destination (Unity Catalog) |
 | `materialize-clickhouse-create` | ClickHouse destination (native protocol) |
+| `materialize-hubspot-create` | HubSpot CRM write-back (contacts, companies, deals, tickets) |
 | `materialize-generic-create` | Any destination connector via dynamic schema discovery |
 
 ### Derivations (transformations)
