@@ -6,11 +6,23 @@ Ask your AI to "capture my Postgres into Snowflake" or "why is this materializat
 
 Works with [Claude Code, GitHub Copilot, Cursor, OpenAI Codex, Gemini CLI, and 30+ other tools](https://agentskills.io) via the open [SKILL.md](https://agentskills.io) standard.
 
+## Which skills do I need?
+
+You can do all of this without these skills. Install a group when you want your AI assistant to know the workflow and the gotchas. Install only what you need.
+
+| If you want help with | Install |
+|-----------------------|---------|
+| Setting up a source | `estuary-captures`, only the skills for your sources |
+| Setting up a destination | `estuary-materializations`, only the skills for your destinations |
+| Writing a derivation | `estuary-derivations`, `derivation-basics` plus the types you use |
+| Changing how fields materialize | `estuary-schema` |
+| Running and troubleshooting pipelines | `estuary-operations` |
+
 ## What's included
 
 ### Captures (sources)
 
-Capture data from databases, APIs, and webhooks into Estuary collections.
+Install these if you want help creating captures, only the ones matching your sources.
 
 | Skill | Description |
 |-------|-------------|
@@ -25,7 +37,7 @@ Capture data from databases, APIs, and webhooks into Estuary collections.
 
 ### Materializations (destinations)
 
-Stream Estuary collections into downstream databases and warehouses.
+Install these if you want help creating materializations, only the ones matching your destinations.
 
 | Skill | Description |
 |-------|-------------|
@@ -39,7 +51,7 @@ Stream Estuary collections into downstream databases and warehouses.
 
 ### Derivations (transformations)
 
-Transform, aggregate, and reshape Estuary collections with streaming SQL, TypeScript, or Python.
+Install these only if you write derivations. Start with `derivation-basics`, then add the types you use.
 
 | Skill | Description |
 |-------|-------------|
@@ -54,7 +66,7 @@ Transform, aggregate, and reshape Estuary collections with streaming SQL, TypeSc
 
 ### Operations
 
-Manage and troubleshoot running pipelines.
+Install these if you want help running and troubleshooting pipelines.
 
 | Skill | Description |
 |-------|-------------|
@@ -69,7 +81,7 @@ Manage and troubleshoot running pipelines.
 
 ### Schema
 
-Shape collection and materialization schemas: rename and remap fields, control what materializes, tune column types, and protect sensitive data.
+Install these only if you modify how fields materialize.
 
 | Skill | Description |
 |-------|-------------|
@@ -89,10 +101,17 @@ Shape collection and materialization schemas: rename and remap fields, control w
 
 ### Skills CLI
 
-Install all skills at once:
+Install all 37 skills:
 
 ```bash
 npx skills add estuary/agent-skills
+```
+
+Or list them and pick:
+
+```bash
+npx skills add estuary/agent-skills --list
+npx skills add estuary/agent-skills --skill capture-postgres-create --skill materialize-snowflake-create
 ```
 
 ### Claude Code
@@ -103,7 +122,7 @@ Add the Estuary marketplace:
 /plugin marketplace add estuary/agent-skills
 ```
 
-Then install by group:
+Then install only the groups you need:
 
 ```bash
 /plugin install estuary-captures@estuary
