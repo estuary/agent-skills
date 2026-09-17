@@ -27,7 +27,7 @@
     },
     {
       "name": "estuary-materializations",
-      "description": "Materialization skills for PostgreSQL, Snowflake, BigQuery, Redshift, Databricks, ClickHouse, and any destination connector",
+      "description": "Materialization skills for PostgreSQL, Snowflake, BigQuery, Redshift, Databricks, ClickHouse, HubSpot, and any destination connector",
       "source": "./",
       "strict": false,
       "skills": [
@@ -37,6 +37,7 @@
         "./skills/materialize-redshift-create",
         "./skills/materialize-databricks-create",
         "./skills/materialize-clickhouse-create",
+        "./skills/materialize-hubspot-create",
         "./skills/materialize-generic-create"
       ]
     },
