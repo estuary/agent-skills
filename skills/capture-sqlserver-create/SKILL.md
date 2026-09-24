@@ -123,7 +123,7 @@ flowctl catalog status <tenant>/<path>/source-sqlserver
 flowctl logs --task <tenant>/<path>/source-sqlserver --since 5m | jq -c '{ts, message}'
 
 # Read captured data
-flowctl collections read --collection <tenant>/<path>/dbo/<table> --uncommitted | head -10
+flowctl collections read --collection <tenant>/<path>/dbo/<table> | head -10
 ```
 
 **Status progression:**

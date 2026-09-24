@@ -144,7 +144,7 @@ curl -X POST \
 flowctl catalog status <tenant>/<path>/source-http-ingest
 
 # Read ingested data
-flowctl collections read --collection <tenant>/<path>/<stream-name> --uncommitted | head -10
+flowctl collections read --collection <tenant>/<path>/<stream-name> | head -10
 ```
 
 ## Troubleshooting

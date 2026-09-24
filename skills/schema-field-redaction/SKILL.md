@@ -127,7 +127,7 @@ flowctl catalog publish --source flow.yaml --auto-approve
 After publishing, new documents will have redaction applied. Check by reading the collection:
 
 ```bash
-flowctl collections read --collection <collection> --uncommitted | head -5
+flowctl collections read --collection <collection> | head -5
 ```
 
 **Expected output:**

@@ -146,7 +146,7 @@ flowctl catalog status <tenant>/<path>/source-mongodb
 flowctl logs --task <tenant>/<path>/source-mongodb --since 5m | jq -c '{ts, message}'
 
 # Read captured data
-flowctl collections read --collection <tenant>/<path>/<database>/<collection> --uncommitted | head -10
+flowctl collections read --collection <tenant>/<path>/<database>/<collection> | head -10
 ```
 
 **Status progression:**

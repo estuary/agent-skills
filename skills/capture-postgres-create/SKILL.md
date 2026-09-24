@@ -171,7 +171,7 @@ flowctl catalog status <tenant>/<path>/source-postgres
 flowctl logs --task <tenant>/<path>/source-postgres --since 5m | jq -c '{ts, message}'
 
 # Read captured data
-flowctl collections read --collection <tenant>/<path>/public/<table> --uncommitted | head -20
+flowctl collections read --collection <tenant>/<path>/public/<table> | head -20
 ```
 
 **Status progression:**
@@ -185,7 +185,7 @@ flowctl collections read --collection <tenant>/<path>/public/<table> --uncommitt
 Insert a row in the source database and verify it appears in the collection within seconds:
 
 ```bash
-flowctl collections read --collection <tenant>/<path>/public/<table> --uncommitted | \
+flowctl collections read --collection <tenant>/<path>/public/<table> | \
   jq 'select(.<key_field> == "<test_value>")'
 ```
 

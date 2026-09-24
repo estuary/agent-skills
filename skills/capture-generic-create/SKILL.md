@@ -15,9 +15,9 @@ Ask the user what data source they want to capture from, then search the connect
 
 ```bash
 flowctl raw get --table connector_tags \
-  --query 'image_name=ilike.*<search-term>*' \
+  --query 'select=image_tag,documentation_url,endpoint_spec_schema,connectors!inner(image_name)' \
+  --query 'connectors.image_name=ilike.*<search-term>*' \
   --query 'protocol=eq.capture' \
-  --query 'select=image_name,image_tag,documentation_url,endpoint_spec_schema' \
   --query 'order=image_tag.desc' \
   --query 'limit=5'
 ```
@@ -33,7 +33,7 @@ Replace `<search-term>` with a keyword from the user's request (e.g., `kafka`, `
 - Try searching by the service name without `source-` prefix
 
 **Extract from the result:**
-- `image_name` + `image_tag` — the connector image and latest version
+- `connectors.image_name` + `image_tag` — the connector image and latest version (`image_name` lives on the `connectors` table, so it comes back nested under `connectors`)
 - `documentation_url` — link to connector docs
 - `endpoint_spec_schema` — JSON Schema for the connector's config (this drives Steps 2-3)
 
@@ -169,7 +169,7 @@ flowctl catalog status <tenant>/<path>/<capture-name>
 flowctl logs --task <tenant>/<path>/<capture-name> --since 5m | jq -c '{ts, message}'
 
 # Read captured data (pick one collection from the bindings)
-flowctl collections read --collection <tenant>/<path>/<collection> --uncommitted | head -5
+flowctl collections read --collection <tenant>/<path>/<collection> | head -5
 ```
 
 **Status progression:**

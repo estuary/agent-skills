@@ -154,7 +154,7 @@ flowctl catalog status <TENANT>/<PATH>/source-alpaca
 flowctl logs --task <TENANT>/<PATH>/source-alpaca --since 5m | jq -c '{ts, message}'
 
 # Read captured trade data
-flowctl collections read --collection <TENANT>/<PATH>/trades --uncommitted | head -10
+flowctl collections read --collection <TENANT>/<PATH>/trades | head -10
 ```
 
 **Status progression:**

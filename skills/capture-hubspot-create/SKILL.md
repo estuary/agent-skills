@@ -189,7 +189,7 @@ flowctl catalog status <TENANT>/<PATH>/source-hubspot-native
 flowctl logs --task <TENANT>/<PATH>/source-hubspot-native --since 5m | jq -c '{ts, message}'
 
 # Read captured data
-flowctl collections read --collection <TENANT>/<PATH>/<resource> --uncommitted | head -10
+flowctl collections read --collection <TENANT>/<PATH>/<resource> | head -10
 ```
 
 **Status progression:**
