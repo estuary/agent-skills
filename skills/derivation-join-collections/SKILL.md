@@ -235,7 +235,7 @@ tests:
 - **Shuffle key can be any JSON pointer into the source — it doesn't have to be related to the source's collection key.** The constraint is cross-transform: shuffle key types and arity must align so the same logical key lands on the same shard from every source. `shuffle: any` is wrong for joins (it breaks co-location), but no "prefix of collection key" rule exists.
 - **String field reduction needs care.** `reduce: maximize` on a string keeps the lexicographically greatest value seen — not the most-recently-written. For dimension fields (name, email), lex-max is usually fine; if you actually need latest-received, use `lastWriteWins`.
 - **Orphan keys won't have aggregated fields in the derivation collection.** If a customer has no orders, fields like `lifetime_order_count` are simply absent from the derived doc (defaults are ignored inside derivations). Set `default: 0` so the **materialization** writes 0 instead of NULL — defaults take effect at materialization time, not in the derivation collection itself.
-- **`--uncommitted` and preview show partial docs per source.** Each transform emits its own partial doc; reduction merges at materialisation. You'll see a customer doc, then separate order docs, not a single merged doc, in preview.
+- **`flowctl collections read` and preview show partial docs per source.** Each transform emits its own partial doc; reduction merges at materialisation. You'll see a customer doc, then separate order docs, not a single merged doc, in the raw collection and in preview.
 - **Timestamp conflicts across sources.** If two sources have `updated_at` and you want the newest, explicitly `maximize` — don't rely on ordering.
 
 ## Related

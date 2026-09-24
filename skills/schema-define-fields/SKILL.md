@@ -201,7 +201,7 @@ The type you declared has an empty intersection with what inference allows for t
 ### Field Path Unknown
 
 To find the exact path:
-1. Read raw documents from collection: `flowctl collections read --collection <name> --uncommitted | head -5`
+1. Read raw documents from collection: `flowctl collections read --collection <name> | head -5`
 2. Look at document structure to identify the JSON pointer path
 3. Use `/` separator for nesting: `/top/nested/deep`
 

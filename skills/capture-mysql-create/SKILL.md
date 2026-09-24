@@ -126,7 +126,7 @@ flowctl catalog status <tenant>/<path>/source-mysql
 flowctl logs --task <tenant>/<path>/source-mysql --since 5m | jq -c '{ts, message}'
 
 # Read captured data
-flowctl collections read --collection <tenant>/<path>/<schema>/<table> --uncommitted | head -10
+flowctl collections read --collection <tenant>/<path>/<schema>/<table> | head -10
 ```
 
 **Status progression:**

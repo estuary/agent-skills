@@ -135,7 +135,7 @@ flowctl catalog publish --source flow.yaml --auto-approve
 flowctl catalog status acmeCo/banking/transaction-results
 
 # Read transaction results
-flowctl collections read --collection acmeCo/banking/transaction-results --uncommitted | \
+flowctl collections read --collection acmeCo/banking/transaction-results | \
   jq 'select(.account_id == "acct_123")'
 ```
 
