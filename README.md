@@ -30,6 +30,7 @@ Install these if you want help creating captures, only the ones matching your so
 | `capture-mysql-create` | MySQL CDC via binlog replication (RDS, Aurora, Cloud SQL, Azure) |
 | `capture-mongodb-create` | MongoDB CDC (Atlas, DocumentDB, self-hosted) |
 | `capture-sqlserver-create` | SQL Server CDC (RDS, Azure SQL, Cloud SQL) |
+| `capture-oracle-create` | Oracle CDC via LogMiner (container and non-container databases, RDS), plus the batch connector fallback |
 | `capture-alpaca-create` | Alpaca stock trade data (historical backfill + real-time websocket stream) |
 | `capture-hubspot-create` | HubSpot real-time CRM capture (contacts, companies, deals, tickets) |
 | `capture-http-ingest-create` | HTTP webhook capture (GitHub, Shopify, Stripe, or any JSON source) |
@@ -102,7 +103,7 @@ Install these only if you modify how fields materialize.
 
 ### Skills CLI
 
-Install all 37 skills:
+Install all 39 skills:
 
 ```bash
 npx skills add estuary/agent-skills
