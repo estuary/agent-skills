@@ -90,13 +90,19 @@ materializations:
           address: "<HOST>:5432"
           database: "<DATABASE>"
           user: "<USERNAME>"
-          password: "<PASSWORD>"
+          credentials:
+            auth_type: UserPassword
+            password: "<PASSWORD>"
           schema: "<SCHEMA>"
     bindings:
       - source: <TENANT>/<collection-path>
         resource:
           table: "<TABLE_NAME>"
 ```
+
+`credentials` is required. A top-level `password` fails validation (see Troubleshooting).
+
+Deleted source rows are soft-deleted by default: the row stays in the table and its `_meta/op` column reads `d`. Set `hardDelete: true` in the config to remove those rows instead.
 
 For SSH tunnel or SSL, add the appropriate config block — see docs for full reference.
 
@@ -122,6 +128,23 @@ flowctl logs --task <TENANT>/<PATH>/materialize-postgres --since 5m | jq -c '{ts
 3. `OK` — Running normally with real-time updates
 
 ## Troubleshooting
+
+### "Missing required property: credentials"
+
+**Cause**: The password was set at the top level of the config. The connector expects it under `credentials`.
+
+**Fix**: Replace `password: "<PASSWORD>"` with:
+```yaml
+credentials:
+  auth_type: UserPassword
+  password: "<PASSWORD>"
+```
+
+### Shard fails on first start with "inferredSchemaIsNotAvailable"
+
+**Cause**: The materialization started reading before the collection's inferred schema was published (common right after a new capture and materialization are published together).
+
+**Fix**: Usually none. The task retries and recovers within a few minutes. If it stays failed, disable and re-enable the task's shards (see the `estuary-connector-restart` skill).
 
 ### "connection refused" or timeout
 
