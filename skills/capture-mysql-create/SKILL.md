@@ -92,10 +92,14 @@ captures:
         config:
           address: "<host>:<port>"
           user: "<username>"
-          password: "<password>"
+          credentials:
+            auth_type: UserPassword
+            password: "<password>"
           historyMode: false
     bindings: []
 ```
+
+`credentials` is required. A top-level `password` fails validation (see Troubleshooting). For AWS IAM or GCP IAM auth, set `credentials.auth_type` accordingly; the docs list the required fields.
 
 **Important fields not in minimal config but commonly needed:**
 - `timezone: "America/New_York"` — required if tables have DATETIME columns
@@ -135,6 +139,17 @@ flowctl collections read --collection <tenant>/<path>/<schema>/<table> | head -1
 3. `OK: Streaming Binlog Events` — CDC running normally
 
 ## Troubleshooting
+
+### "Missing required property: credentials"
+
+**Cause**: The password was set at the top level of the config. The connector expects it under `credentials`.
+
+**Fix**: Replace `password: "<password>"` with:
+```yaml
+credentials:
+  auth_type: UserPassword
+  password: "<password>"
+```
 
 ### "historyMode is required"
 
